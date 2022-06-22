@@ -11,7 +11,9 @@ const fragment = (
         {2}
     </>
 )
-const [named, a, b, c, d] = split(fragment);
+const fragmentSplit = split(fragment);
+const [named, a, b, c, d] = fragmentSplit;
+const { named: namedNode } = fragmentSplit;
 
 console.log(
     await children(named),
@@ -19,6 +21,7 @@ console.log(
     await children(b),
     await children(c),
     await children(d),
+    await namedNode
 );
 
 async function *Component() {
