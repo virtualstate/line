@@ -15,13 +15,14 @@ const fragmentSplit = split(fragment);
 const [named, a, b, c, d] = fragmentSplit;
 const { named: namedNode } = fragmentSplit;
 
+console.log(await namedNode);
+
 console.log(
-    await children(named),
-    await children(a),
-    await children(b),
-    await children(c),
-    await children(d),
-    await namedNode
+    await named,
+    await a,
+    await b,
+    await c,
+    await d,
 );
 
 async function *Component() {
@@ -65,9 +66,9 @@ console.log({
 });
 console.log("After loaded");
 console.log({
-    randomNumber: await children(randomNumber),
-    innerResult: await children(innerResult),
-    asyncRandomNumber: await children(asyncRandomNumber),
+    randomNumber: await randomNumber,
+    innerResult: await innerResult,
+    asyncRandomNumber: await asyncRandomNumber,
     all: await children(node)
 });
 
@@ -75,11 +76,11 @@ const next = split(<Component />);
 
 const { 2: asyncRandom2, named: nextNamed } = next;
 
-console.log({ asyncRandom2, nextNamed });
+// console.log({ asyncRandom2, nextNamed });
 
 console.log({
-    asyncRandom2: await children(asyncRandom2),
-    nextNamed: await children(nextNamed),
+    asyncRandom2: await asyncRandom2,
+    nextNamed: await nextNamed,
     all: await children(next)
 });
 
