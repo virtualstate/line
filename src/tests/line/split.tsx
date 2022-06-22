@@ -12,13 +12,13 @@ const fragment = (
     </>
 )
 const fragmentSplit = split(fragment);
-const [named, a, b, c, d] = fragmentSplit;
-const { named: namedNode } = fragmentSplit;
+const [namedNode, a, b, c, d] = fragmentSplit;
+const { named } = fragmentSplit;
 
-console.log(await namedNode);
+console.log(await named);
 
 console.log(
-    await named,
+    await namedNode,
     await a,
     await b,
     await c,
