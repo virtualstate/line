@@ -8,7 +8,7 @@ export interface SplitIterable extends Iterable<TheAsyncThing>, AsyncIterable<un
 }
 
 export interface Split extends SplitIterable {
-    readonly [key: string]: AsyncIterable<unknown>;
+    readonly [key: string]: TheAsyncThing;
 }
 
 export type Name = string | symbol;
