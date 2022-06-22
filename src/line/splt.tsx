@@ -97,9 +97,10 @@ export function split(input: unknown, options?: SplitOptions): Split {
     }
 
     function getNamedNode(name: Name) {
-        const listener = getNamedListener(name);
+        void getNamedListener(name);
         return anAsyncThing({
             async *[Symbol.asyncIterator]() {
+                const listener = getNamedListener(name);
                 spin();
                 yield listener.promise;
                 if (namedListeners.get(name)?.promise === listener.promise) {
@@ -121,9 +122,10 @@ export function split(input: unknown, options?: SplitOptions): Split {
     }
 
     function getIndexedNode(index: number) {
-        const listener = getListener(index);
+        void getListener(index);
         return anAsyncThing({
             async *[Symbol.asyncIterator]() {
+                const listener = getListener(index);
                 spin();
                 yield listener.promise;
                 if (listeners[index]?.promise === listener.promise) {
