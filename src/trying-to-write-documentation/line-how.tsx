@@ -1,6 +1,6 @@
 /* c8 ignore start */
 
-import {ok, h, descendants} from "@virtualstate/focus";
+import { ok, h, descendants } from "@virtualstate/focus";
 
 /**
  * This is living documentation, change this code, and on build, README.md will be updated
@@ -18,6 +18,5 @@ import {ok, h, descendants} from "@virtualstate/focus";
 
 
  */
-
 
 export default 1;

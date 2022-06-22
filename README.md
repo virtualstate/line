@@ -16,7 +16,7 @@ This project is in semver alpha stage
 
 [//]: # (src/trying-to-write-documentation/line-how.tsx)
 
-import {ok, h, descendants} from "@virtualstate/focus";
+import { ok, h, descendants } from "@virtualstate/focus";
 
 /**
  * This is living documentation, change this code, and on build, README.md will be updated
