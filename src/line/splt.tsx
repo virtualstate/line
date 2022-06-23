@@ -1,10 +1,7 @@
-import {children, h, name, name as nodeName, properties} from "@virtualstate/focus";
+import {children, h, name} from "@virtualstate/focus";
 import { Deferred, deferred } from "../deferred";
 import { ok } from "../like";
 import { TheAsyncThing, anAsyncThing } from "@virtualstate/promise/the-thing";
-
-const Options = Symbol.for(":jsx/options");
-const Name = Symbol.for(":jsx/name");
 
 export interface SplitIterable<T>
   extends Iterable<TheAsyncThing<T>>,
@@ -17,14 +14,13 @@ export interface Split extends SplitIterable<unknown[]>, Record<Name, SplitItera
 
 }
 
-
 export interface SplitOptions {
   known?: Name[];
   max?: number;
   keep?: boolean;
 }
 
-export function split(input: unknown, options?: SplitOptions): Split {
+export function split(input: unknown, options: SplitOptions = {}): Split {
   let listeners: Deferred<unknown[]>[];
 
   let namedListeners: Map<Name, Deferred<unknown>>;
@@ -33,7 +29,7 @@ export function split(input: unknown, options?: SplitOptions): Split {
     spinning = false,
     settled = false;
 
-  const { known } = options || {};
+  const { known } = options;
 
   function init() {
     listeners = [];
@@ -61,7 +57,7 @@ export function split(input: unknown, options?: SplitOptions): Split {
       }
       if (namedListeners.size) {
         const namedResults: Record<string | symbol, unknown> =
-          Object.fromEntries(results.map((node) => [nodeName(node), node]));
+          Object.fromEntries(results.map((node) => [name(node), node]));
         for (const [name, listener] of namedListeners.entries()) {
           listener?.resolve(namedResults[name]);
         }
