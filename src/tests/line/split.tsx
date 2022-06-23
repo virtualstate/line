@@ -88,6 +88,8 @@ import {add} from "cheerio/lib/api/traversing";
 
   const {2: asyncRandom1, named: nodeNamed} = node;
 
+  ok(!nodeNamed, "keep was used, no named node should be available after first resolve");
+
   console.log({asyncRandom1, nodeNamed});
 
   console.log({
