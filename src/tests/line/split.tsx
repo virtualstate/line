@@ -9,6 +9,7 @@ import {
   properties,
 } from "@virtualstate/focus";
 import { ok, split } from "@virtualstate/line";
+import {jump} from "../../line/jump";
 
 const fragment = (
   <>
@@ -55,7 +56,9 @@ async function* Component() {
   console.groupEnd();
 }
 
-const node = split(<Component />);
+const node = split(<Component />, {
+  keep: true
+});
 
 const [randomNumber] = node;
 
@@ -70,6 +73,16 @@ console.log({
   randomNumber: await randomNumber,
   innerResult: await innerResult,
   asyncRandomNumber: await asyncRandomNumber,
+  all: await children(node),
+});
+
+const { 2: asyncRandom1, named: nodeNamed } = node;
+
+console.log({ asyncRandom1, nodeNamed });
+
+console.log({
+  asyncRandom1: await asyncRandom1,
+  nodeNamed: await nodeNamed,
   all: await children(node),
 });
 
@@ -112,20 +125,19 @@ async function* View(options: unknown) {
   console.groupEnd();
 }
 
-const { config, web } = split(<View given={Math.random()} />);
+const { config, web } = split(<View given={Math.random()} />, {
+  keep: true
+});
+const { key, up, script } = jump(config);
+const { script: webScript } = jump(web);
 
-const configNode = await config;
+console.log({
+  key: properties(await key),
+  up: properties(await up),
+  script: await jump(script)[0],
+  webScript: await jump(webScript)[0]
+});
 
-console.log("Have config");
-
-console.log(
-  Object.fromEntries(
-    [...(await children(configNode))].map((node) => [
-      name(node),
-      name(node) === "script" ? node : properties(node),
-    ])
-  )
-);
 console.log(await descendantsSettled(web));
 
 const max = split(<Component />, {
