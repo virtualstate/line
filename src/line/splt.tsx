@@ -33,6 +33,8 @@ export function split(input: unknown, options?: SplitOptions): Split {
     spinning = false,
     settled = false;
 
+  const { known } = options || {};
+
   function init() {
     listeners = [];
     namedListeners = new Map();
@@ -46,22 +48,17 @@ export function split(input: unknown, options?: SplitOptions): Split {
   function spin() {
     if (spinning) return splitPromise;
     spinning = true;
-    return splitPromise = spinSplit(input).catch((error: unknown) => void error);
+    return splitPromise = spinSplit(input);
   }
 
   async function spinSplit(input: unknown) {
     let results
     try {
-      // console.log({ input });
       results = await children(input);
-      // console.log({ input, results });
+      ok(results, "Expected children to be available");
       if (options?.keep) {
         settled = true;
       }
-      // console.log({
-      //   keys: [...namedListeners.keys()],
-      //   length: listeners.length
-      // })
       if (namedListeners.size) {
         const namedResults: Record<string | symbol, unknown> =
           Object.fromEntries(results.map((node) => [nodeName(node), node]));
@@ -82,7 +79,7 @@ export function split(input: unknown, options?: SplitOptions): Split {
       for (const listener of namedListeners.values()) {
         listener?.reject(error);
       }
-      throw await Promise.reject(error);
+      throw error;
     }
     if (!options?.keep) {
       init();
@@ -99,6 +96,7 @@ export function split(input: unknown, options?: SplitOptions): Split {
       return undefined;
     }
     const listener = deferred<unknown[]>();
+    void listener.promise.catch(error => void error);
     namedListeners.set(name, listener);
     return listener;
   }
@@ -129,13 +127,13 @@ export function split(input: unknown, options?: SplitOptions): Split {
       return existing;
     }
     const listener = deferred<unknown[]>();
+    void listener.promise.catch(error => void error);
     listeners[index] = listener;
     return listener;
   }
 
   function getIndexedNode(index: number) {
     let listener = getListener(index);
-    if (!listener) return undefined;
     return anAsyncThing({
       async *[Symbol.asyncIterator]() {
         listener = listener ?? getListener(index);
@@ -152,7 +150,7 @@ export function split(input: unknown, options?: SplitOptions): Split {
 
   const iterableSplit = {
     async *[Symbol.asyncIterator]() {
-      yield await spin();
+      yield spin();
     },
     [Symbol.iterator]() {
       function* withIndex(index: number): Iterable<TheAsyncThing<unknown[]>> {
@@ -170,28 +168,16 @@ export function split(input: unknown, options?: SplitOptions): Split {
 
   const proxy = new Proxy(iterableSplit, {
     get(target: unknown, p: Name) {
-      if (p === Symbol.iterator) {
-        return iterableSplit[Symbol.iterator].bind(iterableSplit);
+      if (p in iterableSplit && typeof iterableSplit[p] === "function") {
+        return iterableSplit[p].bind(async);
       }
-      if (p === Symbol.asyncIterator) {
-        return iterableSplit[Symbol.asyncIterator].bind(iterableSplit);
-      }
-      if (p === "then") {
-        return async.then.bind(async);
-      }
-      if (p === "catch") {
-        return async.catch.bind(async);
-      }
-      if (p === "finally") {
-        return async.finally.bind(async);
-      }
-      if (options?.max && p === "length") {
-        return options.max;
+      if (p in async && typeof async[p] === "function") {
+        return async[p].bind(async);
       }
       if (typeof p === "string" && /^\d+$/.test(p)) {
         return getIndexedNode(+p);
       }
-      if (!options?.known || options.known.includes(p)) {
+      if (known?.includes(p) !== false) {
         return getNamedNode(p);
       }
       return undefined;

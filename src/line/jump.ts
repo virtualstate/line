@@ -1,8 +1,8 @@
 import {children as base, isFragment} from "@virtualstate/focus";
 import {union} from "@virtualstate/union";
-import {Split, split} from "./splt";
+import {Split, split, SplitOptions} from "./splt";
 
-export function jump(input: unknown): Split {
+export function jump(input: unknown, options?: SplitOptions): Split {
     return split({
         async * [Symbol.asyncIterator]() {
             for await (const snapshot of base(input)) {
@@ -21,5 +21,5 @@ export function jump(input: unknown): Split {
                 }
             }
         }
-    })
+    }, options);
 }

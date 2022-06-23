@@ -1,3 +1,5 @@
+import {ok} from "./like";
+
 export interface Deferred<T = void> {
   resolve(value: T): void;
   reject(reason: unknown): void;
@@ -29,10 +31,4 @@ export function deferred<T = void>(): Deferred<T> {
     reject,
     promise,
   };
-}
-
-function ok(value: unknown): asserts value {
-  if (!value) {
-    throw new Error("Value not provided");
-  }
 }
